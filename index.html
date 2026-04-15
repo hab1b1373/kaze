@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaze Badminton - [KAZE]</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Wind Effect */
+        .wind-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .wind-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff88, transparent);
+            animation: windMove linear infinite;
+        }
+
+        @keyframes windMove {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateX(100vw);
+                opacity: 0;
+            }
+        }
+
+        /* Header */
+        header {
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,255,136,0.3);
+            border-bottom: 1px solid rgba(0,255,136,0.3);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: #00ff88;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #00ff88;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: #00ff88;
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url('img/Screenshot 2026-03-05 000454.png') center/cover no-repeat;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.45), 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00ff88, #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 10px #00ff88); }
+            to { filter: drop-shadow(0 0 20px #00ff88); }
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,255,136,0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid #00ff88;
+        }
+
+        .btn-secondary:hover {
+            background: #00ff88;
+            color: #000;
+        }
+
+        /* Sport Icons - Shuttlecock & Raket Badminton */
+        .sport-icons {
+            position: absolute;
+            top: 25%;
+            right: 8%;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            opacity: 0.15;
+            animation: float 6s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        .shuttlecock-icon {
+            font-size: 4.5rem;
+            color: #00ff88;
+            transform: rotate(20deg);
+        }
+
+        .raket-badminton {
+            width: 80px;
+            height: 220px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 50%, #00ff88 100%);
+            border-radius: 40px 40px 8px 8px;
+            clip-path: polygon(0% 25%, 100% 25%, 95% 100%, 5% 100%);
+            position: relative;
+            box-shadow: 
+                0 8px 20px rgba(0,0,0,0.4),
+                inset 0 0 15px rgba(255,255,255,0.2);
+            transform: rotate(-15deg);
+        }
+
+        .raket-head {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 45px;
+            height: 35px;
+            background: linear-gradient(45deg, #444, #666);
+            border-radius: 50%;
+            box-shadow: inset 0 3px 8px rgba(0,0,0,0.6);
+        }
+
+        .raket-handle {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 90px;
+            background: linear-gradient(180deg, #555, #222);
+            border-radius: 3px;
+            box-shadow: 2px 0 6px rgba(0,0,0,0.5);
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 5rem 2rem;
+            background: #f8f9fa;
+            text-align: center;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            padding: 2rem;
+            background: linear-gradient(135deg, #fff, #f0f8f0);
+            border: 1px solid rgba(0,255,136,0.3);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-10px);
+            border-color: #00ff88;
+            box-shadow: 0 20px 40px rgba(0,255,136,0.2);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #00ff88;
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* About Preview */
+        .about-preview {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, #0a3d0a 0%, #000 100%);
+            color: white;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: #00ff88;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: #ccc;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text h3 {
+            font-size: 2rem;
+            color: #00ff88;
+            margin-bottom: 1rem;
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 400px;
+            background: #ffffff;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(10deg); }
+            66% { transform: translateY(-10px) rotate(-5deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero-buttons { flex-direction: column; align-items: center; }
+            .about-content { grid-template-columns: 1fr; text-align: center; }
+            .sport-icons { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Wind Effect -->
+    <div class="wind-effect" id="windEffect"></div>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fas fa-wind"></i>
+                <span>Badminton Kaze</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#achievements">Achievements</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div style="position: relative; z-index: 2;">
+            <h1>Badminton Kaze Club </h1>
+            <p class="subtitle">🏸 Have fun for Badminton</p>
+            <div class="hero-buttons">
+                <a href="#about" class="btn btn-primary">
+                    <i class="fas fa-user"></i> Tentang kami
+                </a>
+                <a href="#achievements" class="btn btn-secondary">
+                    <i class="fas fa-trophy"></i> Galeri
+                </a>
+            </div>
+        </div>
+        
+        <!-- Shuttlecock & Raket Badminton Icons -->
+        <div class="sport-icons">
+            <div class="shuttlecock-icon">
+                <i class="fas fa-shuttle-space"></i>
+            </div>
+            <div class="raket-badminton">
+                <div class="raket-head"></div>
+                <div class="raket-handle"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">150+</span>
+                    <div class="stat-label">Pertandingan</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">25</span>
+                    <div class="stat-label">🏆 Gelar Juara</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">8</span>
+                    <div class="stat-label">Tahun Karir</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">95%</span>
+                    <div class="stat-label">Win Rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Preview -->
+    <section id="about" class="about-preview">
+        <div class="container">
+            <div class="section-header">
+                <h2>Tentang kami</h2>
+                <p>Nama dari club kami yang bernama "KAZE" terinspirasi dari bahasa jepang yakni kaze = "angin" yang dimana skill permainan badminton kami angin anginan</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Pemain Tunggal & Ganda</h3>
+                    <p>
+                        Grub ini kami buat Mulai pada tahun 2026 bulan april, dengan tujuan untuk teman teman yang ingin melihat kami bermain badminton dengan santai dan tenang
+                    </p>
+                    <p>
+                        Fokus utama kami hanya bermain badminton dengan seru dan santai tanpa ada konflik
+                    </p>
+                </div>
+                <div class="profile-image">
+                    <img src="img/Putih Hitam Ilustrasi Klub Badminton Logo (2).png" alt="Kaze Club Badminton">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(0,0,0,0.98)';
+            } else {
+                header.style.background = 'rgba(0,0,0,0.95)';
+            }
+        });
+
+        // Wind effect
+        function createWindLine() {
+            const windLine = document.createElement('div');
+            windLine.className = 'wind-line';
+            windLine.style.top = Math.random() * 100 + '%';
+            windLine.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            windLine.style.width = (Math.random() * 200 + 100) + 'px';
+            document.getElementById('windEffect').appendChild(windLine);
+
+            setTimeout(() => {
+                windLine.remove();
+            }, 5000);
+        }
+
+        setInterval(createWindLine, 800);
+
+        // Animate stats
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 1s ease-out';
+                }
+            });
+        });
+
+        document.querySelectorAll('.stat-item').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
