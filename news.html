@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaze Club - Berita, Pemain, Turnamen, Score</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #020617);
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+        .container { max-width: 1150px; margin: 0 auto; padding: 0 1rem; }
+        header {
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(2, 6, 23, 0.9);
+            border-bottom: 1px solid rgba(34, 197, 94, 0.3);
+            backdrop-filter: blur(8px);
+        }
+        nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.9rem 0;
+        }
+        .logo {
+            color: #22c55e; font-weight: 800; font-size: 1.2rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .menu {
+            display: flex; list-style: none; gap: 0.8rem; flex-wrap: wrap;
+        }
+        .menu a {
+            text-decoration: none; color: #cbd5e1;
+            border: 1px solid #334155; padding: 0.45rem 0.75rem; border-radius: 999px;
+            font-size: 0.9rem;
+        }
+        .menu a:hover { color: #dcfce7; border-color: #22c55e; }
+
+        .hero {
+            padding: 3rem 0 2rem;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 2rem; color: #22c55e; margin-bottom: 0.5rem;
+        }
+        .hero p { color: #94a3b8; max-width: 760px; margin: 0 auto; }
+
+        .stats {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem;
+            margin: 1.5rem 0 2rem;
+        }
+        .stat {
+            background: #111827; border: 1px solid #334155; border-radius: 12px;
+            padding: 0.9rem; text-align: center;
+        }
+        .stat .num { font-size: 1.45rem; font-weight: 800; color: #86efac; }
+        .stat .label { color: #94a3b8; font-size: 0.85rem; }
+
+        .section { margin-bottom: 2rem; }
+        .section-title {
+            display: flex; align-items: center; gap: 0.5rem;
+            color: #86efac; margin-bottom: 0.7rem;
+        }
+        .toolbar {
+            display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.8rem;
+        }
+        input, select {
+            border: 1px solid #475569; background: #1e293b; color: #f1f5f9;
+            padding: 0.55rem 0.7rem; border-radius: 9px;
+        }
+
+        .grid-3 { display: grid; gap: 0.8rem; grid-template-columns: repeat(3, 1fr); }
+        .grid-2 { display: grid; gap: 0.8rem; grid-template-columns: repeat(2, 1fr); }
+        .card {
+            background: #111827; border: 1px solid #334155; border-radius: 12px;
+            padding: 0.9rem;
+        }
+        .card h3 { color: #bbf7d0; font-size: 1rem; margin-bottom: 0.25rem; }
+        .meta { color: #94a3b8; font-size: 0.86rem; margin-bottom: 0.35rem; }
+        .badge {
+            display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px;
+            border: 1px solid #22c55e; color: #dcfce7; background: #14532d;
+            font-size: 0.75rem;
+        }
+        .table-wrap {
+            background: #111827; border: 1px solid #334155; border-radius: 12px; overflow: auto;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th, td {
+            padding: 0.75rem; border-bottom: 1px solid #1f2937; text-align: left;
+        }
+        th { color: #86efac; font-size: 0.85rem; }
+        td { color: #e2e8f0; font-size: 0.9rem; }
+        .empty { color: #94a3b8; font-style: italic; padding: 0.8rem; }
+
+        footer { text-align: center; color: #94a3b8; padding: 2rem 0; }
+
+        @media (max-width: 900px) {
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .grid-3, .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo"><i class="fas fa-wind"></i> Kaze Club</div>
+                <ul class="menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#berita">Berita</a></li>
+                    <li><a href="#pemain">Pemain</a></li>
+                    <li><a href="#turnamen">Turnamen</a></li>
+                    <li><a href="#score">Score</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Pusat Informasi Kaze</h1>
+            <p>Halaman ini khusus pengunjung untuk melihat berita terbaru, daftar pemain, jadwal turnamen, dan papan score.</p>
+            <div class="stats" id="statsBox"></div>
+        </section>
+
+        <section class="section" id="berita">
+            <h2 class="section-title"><i class="fas fa-newspaper"></i> Berita Terbaru</h2>
+            <div class="toolbar">
+                <input id="newsSearch" type="text" placeholder="Cari berita..." />
+                <select id="newsCategoryFilter">
+                    <option value="">Semua kategori</option>
+                    <option value="Klub">Klub</option>
+                    <option value="Latihan">Latihan</option>
+                    <option value="Turnamen">Turnamen</option>
+                </select>
+            </div>
+            <div class="grid-3" id="newsList"></div>
+        </section>
+
+        <section class="section" id="pemain">
+            <h2 class="section-title"><i class="fas fa-users"></i> Daftar Pemain</h2>
+            <div class="toolbar">
+                <input id="playerSearch" type="text" placeholder="Cari pemain..." />
+                <select id="playerRoleFilter">
+                    <option value="">Semua posisi</option>
+                    <option value="Tunggal">Tunggal</option>
+                    <option value="Ganda">Ganda</option>
+                </select>
+            </div>
+            <div class="grid-3" id="playerList"></div>
+        </section>
+
+        <section class="section" id="turnamen">
+            <h2 class="section-title"><i class="fas fa-trophy"></i> Jadwal Turnamen</h2>
+            <div class="toolbar">
+                <select id="tournamentStatusFilter">
+                    <option value="">Semua status</option>
+                    <option value="Akan Datang">Akan Datang</option>
+                    <option value="Berlangsung">Berlangsung</option>
+                    <option value="Selesai">Selesai</option>
+                </select>
+            </div>
+            <div class="grid-2" id="tournamentList"></div>
+        </section>
+
+        <section class="section" id="score">
+            <h2 class="section-title"><i class="fas fa-medal"></i> Papan Score</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Pemain</th>
+                            <th>Posisi</th>
+                            <th>Total Point</th>
+                            <th>Turnamen Diikuti</th>
+                            <th>Terakhir Update</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scoreTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">Kaze Club - Visitor Information Page</div>
+    </footer>
+
+    <script>
+        const data = { berita: [], pemain: [], turnamen: [], score: [] };
+
+        const newsList = document.getElementById("newsList");
+        const playerList = document.getElementById("playerList");
+        const tournamentList = document.getElementById("tournamentList");
+        const scoreTableBody = document.getElementById("scoreTableBody");
+        const statsBox = document.getElementById("statsBox");
+
+        const newsSearch = document.getElementById("newsSearch");
+        const newsCategoryFilter = document.getElementById("newsCategoryFilter");
+        const playerSearch = document.getElementById("playerSearch");
+        const playerRoleFilter = document.getElementById("playerRoleFilter");
+        const tournamentStatusFilter = document.getElementById("tournamentStatusFilter");
+
+        function esc(str) {
+            return String(str).replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+        }
+
+        function renderStats() {
+            const totalScore = data.score.reduce((sum, item) => sum + item.point, 0);
+            statsBox.innerHTML = `
+                <article class="stat"><div class="num">${data.berita.length}</div><div class="label">Berita</div></article>
+                <article class="stat"><div class="num">${data.pemain.length}</div><div class="label">Pemain</div></article>
+                <article class="stat"><div class="num">${data.turnamen.length}</div><div class="label">Turnamen</div></article>
+                <article class="stat"><div class="num">${totalScore}</div><div class="label">Total Point</div></article>
+            `;
+        }
+
+        function renderNews() {
+            const q = newsSearch.value.trim().toLowerCase();
+            const cat = newsCategoryFilter.value;
+            const filtered = data.berita.filter(item => {
+                const matchesQ = (item.title + " " + item.content).toLowerCase().includes(q);
+                const matchesCat = cat ? item.category === cat : true;
+                return matchesQ && matchesCat;
+            });
+
+            if (!filtered.length) {
+                newsList.innerHTML = '<p class="empty">Tidak ada berita yang cocok.</p>';
+                return;
+            }
+
+            newsList.innerHTML = filtered.map(item => `
+                <article class="card">
+                    <h3>${esc(item.title)}</h3>
+                    <p class="meta">${esc(item.date)} | <span class="badge">${esc(item.category)}</span></p>
+                    <p>${esc(item.content)}</p>
+                </article>
+            `).join("");
+        }
+
+        function getPlayerTotal(playerId) {
+            return data.score.filter(s => s.playerId === playerId).reduce((sum, s) => sum + s.point, 0);
+        }
+
+        function renderPlayers() {
+            const q = playerSearch.value.trim().toLowerCase();
+            const role = playerRoleFilter.value;
+            const filtered = data.pemain.filter(item => {
+                const matchesQ = item.name.toLowerCase().includes(q);
+                const matchesRole = role ? item.role === role : true;
+                return matchesQ && matchesRole;
+            });
+
+            if (!filtered.length) {
+                playerList.innerHTML = '<p class="empty">Tidak ada pemain yang cocok.</p>';
+                return;
+            }
+
+            playerList.innerHTML = filtered.map(item => `
+                <article class="card">
+                    <h3>${esc(item.name)}</h3>
+                    <p class="meta">Posisi: <span class="badge">${esc(item.role)}</span></p>
+                    <p>Nickname: ${esc(item.nickname)}</p>
+                    <p>Total point: <strong>${getPlayerTotal(item.id)}</strong></p>
+                </article>
+            `).join("");
+        }
+
+        function renderTournaments() {
+            const status = tournamentStatusFilter.value;
+            const filtered = data.turnamen.filter(item => status ? item.status === status : true);
+
+            if (!filtered.length) {
+                tournamentList.innerHTML = '<p class="empty">Tidak ada turnamen pada filter ini.</p>';
+                return;
+            }
+
+            tournamentList.innerHTML = filtered.map(item => `
+                <article class="card">
+                    <h3>${esc(item.name)}</h3>
+                    <p class="meta">${esc(item.date)} | ${esc(item.location)}</p>
+                    <p><span class="badge">${esc(item.status)}</span></p>
+                </article>
+            `).join("");
+        }
+
+        function renderScoreboard() {
+            const map = data.pemain.map(player => {
+                const relatedScore = data.score.filter(s => s.playerId === player.id);
+                const total = relatedScore.reduce((sum, s) => sum + s.point, 0);
+                const latest = relatedScore.length ? relatedScore.map(x => x.date).sort().slice(-1)[0] : "-";
+                const tournaments = new Set(relatedScore.map(s => s.tournamentId)).size;
+                return { ...player, total, tournaments, latest };
+            }).sort((a, b) => b.total - a.total);
+
+            if (!map.length) {
+                scoreTableBody.innerHTML = '<tr><td colspan="6" class="empty">Belum ada data score.</td></tr>';
+                return;
+            }
+
+            scoreTableBody.innerHTML = map.map((item, i) => `
+                <tr>
+                    <td>#${i + 1}</td>
+                    <td>${esc(item.name)}</td>
+                    <td>${esc(item.role)}</td>
+                    <td>${item.total}</td>
+                    <td>${item.tournaments}</td>
+                    <td>${esc(item.latest)}</td>
+                </tr>
+            `).join("");
+        }
+
+        async function loadPublicData() {
+            try {
+                const response = await fetch("public_data.php", { cache: "no-store" });
+                if (!response.ok) throw new Error("Gagal mengambil data publik");
+                const payload = await response.json();
+                data.berita = Array.isArray(payload.berita) ? payload.berita : [];
+                data.pemain = Array.isArray(payload.pemain) ? payload.pemain : [];
+                data.turnamen = Array.isArray(payload.turnamen) ? payload.turnamen : [];
+                data.score = Array.isArray(payload.score) ? payload.score : [];
+            } catch (err) {
+                console.error(err);
+                newsList.innerHTML = '<p class="empty">Gagal memuat data publik.</p>';
+                playerList.innerHTML = '<p class="empty">Gagal memuat data publik.</p>';
+                tournamentList.innerHTML = '<p class="empty">Gagal memuat data publik.</p>';
+                scoreTableBody.innerHTML = '<tr><td colspan="6" class="empty">Gagal memuat data publik.</td></tr>';
+                return;
+            }
+
+            renderStats();
+            renderNews();
+            renderPlayers();
+            renderTournaments();
+            renderScoreboard();
+        }
+
+        newsSearch.addEventListener("input", renderNews);
+        newsCategoryFilter.addEventListener("change", renderNews);
+        playerSearch.addEventListener("input", renderPlayers);
+        playerRoleFilter.addEventListener("change", renderPlayers);
+        tournamentStatusFilter.addEventListener("change", renderTournaments);
+
+        loadPublicData();
+    </script>
+</body>
+</html>
